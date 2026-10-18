@@ -98,4 +98,3 @@ class SiteSettings extends Page
             ->send();
     }
 }
-

@@ -6,12 +6,13 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 
 class ImageUploadService
 {
     private const MAX_SIZE = 1600;
+
     private const QUALITY = 80;
 
     private ImageManager $manager;
@@ -19,7 +20,7 @@ class ImageUploadService
     public function __construct()
     {
         ini_set('memory_limit', '512M');
-        $this->manager = new ImageManager(new Driver());
+        $this->manager = new ImageManager(new Driver);
     }
 
     /** Konversi ke webp, upload ke Supabase (atau fallback disk lokal), kembalikan URL publik. */
@@ -45,10 +46,11 @@ class ImageUploadService
             $webp = $image->encode(new WebpEncoder(quality: self::QUALITY));
         }
 
-        $path = $folder . '/' . Str::uuid() . '.webp';
+        $path = $folder.'/'.Str::uuid().'.webp';
 
-        $hasSupabaseKey = !empty(config('filesystems.disks.supabase.key'));
-        $diskName = $hasSupabaseKey ? 'supabase' : 'public';
+        $hasSupabaseKey = ! empty(config('filesystems.disks.supabase.key'));
+        $defaultDisk = config('filesystems.default');
+        $diskName = ($defaultDisk === 'supabase' || $hasSupabaseKey) ? 'supabase' : 'public';
 
         Storage::disk($diskName)->put($path, (string) $webp, [
             'ContentType' => 'image/webp',
@@ -69,27 +71,67 @@ class ImageUploadService
 
     public function delete(string $url): void
     {
-        $hasSupabaseKey = !empty(config('filesystems.disks.supabase.key'));
-        $diskName = $hasSupabaseKey ? 'supabase' : 'public';
+        $path = $this->pathFromUrl($url);
+        $hasSupabaseKey = ! empty(config('filesystems.disks.supabase.key'));
 
-        if ($diskName === 'supabase') {
-            Storage::disk('supabase')->delete($this->pathFromUrl($url));
-        } else {
-            $path = ltrim(Str::after($url, '/storage/'), '/');
-            Storage::disk('public')->delete($path);
+        // Delete from Supabase if configured or if URL belongs to Supabase
+        if ($hasSupabaseKey || Str::contains($url, '.supabase.co')) {
+            try {
+                Storage::disk('supabase')->delete($path);
+            } catch (\Throwable $e) {
+                \Log::warning('Failed to delete image from Supabase: '.$e->getMessage());
+            }
+        }
+
+        // Also clean up from local public storage if exists
+        try {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to delete image from local disk: '.$e->getMessage());
         }
     }
 
-    private function publicUrl(string $path): string
+    public function publicUrl(string $path): string
     {
-        $base = config('services.supabase.public_url') ?: config('app.url') . '/storage';
-        return rtrim($base, '/') . '/' . ltrim($path, '/');
+        $configuredUrl = config('filesystems.disks.supabase.url');
+        if (! empty($configuredUrl)) {
+            return rtrim($configuredUrl, '/').'/'.ltrim($path, '/');
+        }
+
+        $servicesUrl = config('services.supabase.public_url');
+        if (! empty($servicesUrl)) {
+            return rtrim($servicesUrl, '/').'/'.ltrim($path, '/');
+        }
+
+        $endpoint = config('filesystems.disks.supabase.endpoint');
+        $bucket = config('filesystems.disks.supabase.bucket', 'nusarattan');
+        if (! empty($endpoint) && ! empty($bucket)) {
+            $base = rtrim(str_replace('/storage/v1/s3', '', $endpoint), '/');
+
+            return "{$base}/storage/v1/object/public/{$bucket}/".ltrim($path, '/');
+        }
+
+        return Storage::disk('public')->url($path);
     }
 
-    private function pathFromUrl(string $url): string
+    public function pathFromUrl(string $url): string
     {
-        $base = config('services.supabase.public_url') ?: config('app.url') . '/storage';
-        return ltrim(Str::after($url, rtrim($base, '/')), '/');
+        if (Str::contains($url, '/storage/v1/object/public/')) {
+            $afterPublic = Str::after($url, '/storage/v1/object/public/');
+            $bucket = config('filesystems.disks.supabase.bucket', 'nusarattan');
+            if (Str::startsWith($afterPublic, $bucket.'/')) {
+                return Str::after($afterPublic, $bucket.'/');
+            }
+
+            return Str::after($afterPublic, '/');
+        }
+
+        if (Str::contains($url, '/storage/')) {
+            return ltrim(Str::after($url, '/storage/'), '/');
+        }
+
+        return basename($url);
     }
 }
-

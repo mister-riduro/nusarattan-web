@@ -62,13 +62,14 @@ return [
 
         'supabase' => [
             'driver' => 's3',
-            'key' => env('SUPABASE_S3_KEY'),
-            'secret' => env('SUPABASE_S3_SECRET'),
-            'region' => env('SUPABASE_S3_REGION', 'us-east-1'),
-            'bucket' => env('SUPABASE_BUCKET', 'products'),
-            'endpoint' => env('SUPABASE_S3_ENDPOINT'),   // https://<project-ref>.storage.supabase.co/storage/v1/s3
+            'key' => env('SUPABASE_S3_KEY', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('SUPABASE_S3_SECRET', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('SUPABASE_S3_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
+            'bucket' => env('SUPABASE_BUCKET', 'nusarattan'),
+            'endpoint' => env('SUPABASE_S3_ENDPOINT'),   // https://<project-ref>.supabase.co/storage/v1/s3
+            'url' => env('SUPABASE_PUBLIC_URL'),         // https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>
             'use_path_style_endpoint' => true,
-            'throw' => true,
+            'throw' => false,
         ],
 
     ],

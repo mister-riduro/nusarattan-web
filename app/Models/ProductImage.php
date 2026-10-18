@@ -32,7 +32,7 @@ class ProductImage extends Model
                     app(ImageUploadService::class)->delete($image->url);
                 } catch (\Throwable $e) {
                     // Log or ignore if storage not configured / file already gone
-                    \Log::warning("Failed to delete image: " . $e->getMessage());
+                    \Log::warning('Failed to delete image: '.$e->getMessage());
                 }
             }
         });
@@ -43,4 +43,3 @@ class ProductImage extends Model
         return $this->belongsTo(Product::class);
     }
 }
-

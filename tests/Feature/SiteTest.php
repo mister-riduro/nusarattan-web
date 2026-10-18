@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use Database\Seeders\DatabaseSeeder;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -127,7 +127,7 @@ class SiteTest extends TestCase
 
     public function test_admin_panel_accessible_by_authenticated_user(): void
     {
-        $admin = \App\Models\User::create([
+        $admin = User::create([
             'name' => 'Admin User',
             'email' => 'admin@test.com',
             'password' => bcrypt('password'),
@@ -147,5 +147,21 @@ class SiteTest extends TestCase
         $response->assertSee('/product-outdoor-dining', false);
         $response->assertSee('/about-us', false);
     }
-}
 
+    public function test_seo_metadata_and_structured_data_present(): void
+    {
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('<meta name="robots"', false);
+        $response->assertSee('og:title', false);
+        $response->assertSee('og:image', false);
+        $response->assertSee('twitter:card', false);
+        $response->assertSee('schema.org', false);
+        $response->assertSee('PT Rekayasa Karya Utama', false);
+
+        $catResponse = $this->get('/product-indoor');
+        $catResponse->assertStatus(200);
+        $catResponse->assertSee('BreadcrumbList', false);
+        $catResponse->assertSee('Indoor Furniture', false);
+    }
+}

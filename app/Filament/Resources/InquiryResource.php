@@ -63,7 +63,7 @@ class InquiryResource extends Resource
                 Tables\Columns\IconColumn::make('read_at')
                     ->label('Read')
                     ->boolean()
-                    ->getStateUsing(fn ($record) => !empty($record->read_at)),
+                    ->getStateUsing(fn ($record) => ! empty($record->read_at)),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

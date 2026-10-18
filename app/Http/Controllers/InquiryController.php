@@ -19,6 +19,7 @@ class InquiryController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => true, 'message' => 'Thank you for your message!']);
             }
+
             return back()->with('success', 'Thank you for your message!');
         }
 
@@ -31,7 +32,7 @@ class InquiryController extends Controller
                 'email' => ['required', 'email', 'max:255'],
             ]);
             $validated['type'] = 'catalog_download';
-            $validated['message'] = 'Catalog download request. Business type: ' . ($request->input('business_type') ?? '-');
+            $validated['message'] = 'Catalog download request. Business type: '.($request->input('business_type') ?? '-');
         } else {
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
@@ -50,22 +51,22 @@ class InquiryController extends Controller
         $recipient = env('MAIL_TO_ADDRESS', Setting::get('contact_email', 'nusarattanid@gmail.com'));
         try {
             Mail::raw(
-                "New inquiry received on Nusarattan:\n\n" .
-                "Type: {$inquiry->type}\n" .
-                "Name: {$inquiry->name}\n" .
-                "Email: {$inquiry->email}\n" .
-                "Country: {$inquiry->country}\n" .
-                "Business Type: {$inquiry->business_type}\n" .
-                "Message:\n{$inquiry->message}\n\n" .
-                "IP: {$inquiry->ip}\n" .
-                "Date: " . now()->toDateTimeString(),
+                "New inquiry received on Nusarattan:\n\n".
+                "Type: {$inquiry->type}\n".
+                "Name: {$inquiry->name}\n".
+                "Email: {$inquiry->email}\n".
+                "Country: {$inquiry->country}\n".
+                "Business Type: {$inquiry->business_type}\n".
+                "Message:\n{$inquiry->message}\n\n".
+                "IP: {$inquiry->ip}\n".
+                'Date: '.now()->toDateTimeString(),
                 function ($message) use ($recipient, $inquiry) {
                     $message->to($recipient)
                         ->subject("New Nusarattan Inquiry from {$inquiry->name}");
                 }
             );
         } catch (\Throwable $e) {
-            Log::warning("Failed to send inquiry email: " . $e->getMessage());
+            Log::warning('Failed to send inquiry email: '.$e->getMessage());
         }
 
         if ($request->wantsJson()) {
@@ -79,4 +80,3 @@ class InquiryController extends Controller
         return back()->with('success', 'Thank you! Your message has been received.');
     }
 }
-

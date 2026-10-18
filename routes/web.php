@@ -13,4 +13,3 @@ Route::get('/about-us', [PageController::class, 'about'])->name('about');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::post('/contact', [InquiryController::class, 'store'])
     ->middleware('throttle:5,1')->name('contact.store');
-

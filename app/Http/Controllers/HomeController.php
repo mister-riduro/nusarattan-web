@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\FurnitureSet;
 use App\Models\Product;
 use App\Models\Setting;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -33,4 +32,3 @@ class HomeController extends Controller
         return view('pages.home', compact('furnitureSet', 'featuredProducts', 'categories', 'settings'));
     }
 }
-

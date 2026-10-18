@@ -24,4 +24,3 @@ class Inquiry extends Model
         'read_at' => 'datetime',
     ];
 }
-

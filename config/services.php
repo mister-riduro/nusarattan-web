@@ -39,4 +39,9 @@ return [
         'public_url' => env('SUPABASE_PUBLIC_URL'),
     ],
 
+    'seo' => [
+        'google_verification' => env('GOOGLE_SITE_VERIFICATION'),
+        'bing_verification' => env('BING_SITE_VERIFICATION'),
+    ],
+
 ];

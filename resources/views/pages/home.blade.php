@@ -1,7 +1,21 @@
 @extends('layouts.app')
 
 @section('title', 'Indonesian Rattan Furniture Exporter | Wholesale & Custom Manufacturer')
-@section('meta_description', 'Nusarattan is trusted Indonesia rattan furniture manufacturer and exporters specializing in hotels, villas, restaurants and commercial projects. Custom designs, wholesale export, eco-friendly material, local artisans')
+@section('meta_description', 'Nusarattan is a trusted Indonesian rattan furniture manufacturer and exporters specializing in hotels, villas, restaurants, and commercial projects. Custom designs, wholesale export, eco-friendly material, local artisans.')
+@section('og_image', $settings['hero_image_url'] ?? asset('storage/products/fb6a6120-812c-4ad1-95a4-30c2b51e00a6.webp'))
+@section('og_image_alt', 'Nusarattan - Indonesian Rattan Furniture Exporter')
+
+@section('schema_json')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Nusarattan",
+  "url": "{{ url('/') }}"
+}
+</script>
+@endsection
+
 
 @section('content')
 <!-- Hero Section -->

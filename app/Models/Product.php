@@ -75,17 +75,23 @@ class Product extends Model
         }
 
         $formatted = number_format((float) $this->price_from, 0);
+
         return "Starts from \${$formatted}";
     }
 
     public function getDimensionsAttribute(): ?string
     {
         $parts = [];
-        if ($this->width_cm) $parts[] = "{$this->width_cm}W";
-        if ($this->depth_cm) $parts[] = "{$this->depth_cm}D";
-        if ($this->height_cm) $parts[] = "{$this->height_cm}H";
+        if ($this->width_cm) {
+            $parts[] = "{$this->width_cm}W";
+        }
+        if ($this->depth_cm) {
+            $parts[] = "{$this->depth_cm}D";
+        }
+        if ($this->height_cm) {
+            $parts[] = "{$this->height_cm}H";
+        }
 
-        return !empty($parts) ? implode(', ', $parts) : null;
+        return ! empty($parts) ? implode(', ', $parts) : null;
     }
 }
-

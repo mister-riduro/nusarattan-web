@@ -1,7 +1,38 @@
 @extends('layouts.app')
 
+@php
+    $aboutImage = $settings['about_hero_image'] ?? asset('storage/products/fb6a6120-812c-4ad1-95a4-30c2b51e00a6.webp');
+@endphp
+
+
 @section('title', 'About Nusarattan | Indonesian Rattan Furniture Manufacturer')
 @section('meta_description', 'Learn about Nusarattan, trusted Indonesian rattan furniture exporter and manufacturer specializing in custom designs and sustainable craftsmanship.')
+@section('og_image', $aboutImage)
+@section('og_image_alt', 'About Nusarattan - Indonesian Rattan Furniture Manufacturer')
+
+@section('schema_json')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ url('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "About Us",
+      "item": "{{ url()->current() }}"
+    }
+  ]
+}
+</script>
+@endsection
+
 
 @section('content')
 <!-- Hero Section -->

@@ -1,7 +1,44 @@
 @extends('layouts.app')
 
+@php
+    $categoryImage = $category->products->first()?->primaryImage?->url ?? asset('storage/products/fb6a6120-812c-4ad1-95a4-30c2b51e00a6.webp');
+@endphp
+
+
 @section('title', $category->meta_title ?? "{$category->name} | Rattan Furniture by Nusarattan")
 @section('meta_description', $category->meta_description ?? "Browse {$category->name} from Nusarattan, Indonesian rattan furniture manufacturer. Custom designs, wholesale export, handcrafted by local artisans.")
+@section('og_image', $categoryImage)
+@section('og_image_alt', "{$category->name} - Nusarattan Collection")
+
+@section('schema_json')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ url('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Products",
+      "item": "{{ route('category.show', 'indoor') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ $category->name }}",
+      "item": "{{ url()->current() }}"
+    }
+  ]
+}
+</script>
+@endsection
+
 
 @section('content')
 <!-- Category Snippets Header -->

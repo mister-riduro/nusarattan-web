@@ -7,9 +7,11 @@ use App\Models\FurnitureSet;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\ImageUploadService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -20,21 +22,22 @@ class DatabaseSeeder extends Seeder
         $downloadedDir = 'C:/Users/ridlo/.gemini/antigravity/brain/181b3f98-d22b-4bc8-982b-d85aaa97db8e/scratch/downloaded_assets';
 
         // 0. Admin user
-        \App\Models\User::updateOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@nusarattan.com'],
             [
                 'name' => 'Nusarattan Admin',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'password' => Hash::make('password'),
             ]
         );
 
         // Helper to upload or copy local asset
         $uploadAsset = function ($hashWithExt, $folder = 'products') use ($imageService, $downloadedDir) {
-            $source = $downloadedDir . '/' . $hashWithExt;
+            $source = $downloadedDir.'/'.$hashWithExt;
             if (File::exists($source)) {
                 return $imageService->store($source, $folder);
             }
-            return '/storage/' . $folder . '/' . $hashWithExt;
+
+            return '/storage/'.$folder.'/'.$hashWithExt;
         };
 
         // 1. Settings
@@ -47,7 +50,7 @@ class DatabaseSeeder extends Seeder
             'map_lat' => '-6.715',
             'map_lng' => '108.55',
             'footer_tagline' => 'Well-crafted rattan furniture from Nusantara (Indonesia archipelago).',
-            'copyright_text' => '© ' . date('Y') . ' PT Rekayasa Karya Utama',
+            'copyright_text' => '© '.date('Y').' PT Rekayasa Karya Utama',
             'contact_email' => 'nusarattanid@gmail.com',
             'hero_heading' => 'Indonesian Rattan Furniture Exporter, Wholesale and Custom Manufacturer',
             'hero_subheading' => 'We deliver premium and sustainable rattan products worldwide.',
@@ -125,7 +128,7 @@ class DatabaseSeeder extends Seeder
 
             // Also save category thumbnail URL in settings for easy retrieval in snippets
             $catThumbUrl = $uploadAsset($catItem['image_hash'], 'categories');
-            Setting::set('category_thumb_' . $catItem['slug'], $catThumbUrl);
+            Setting::set('category_thumb_'.$catItem['slug'], $catThumbUrl);
         }
 
         // 3. Featured Products on Home
@@ -455,7 +458,7 @@ class DatabaseSeeder extends Seeder
                 $product->id => [
                     'group' => $item['group'],
                     'sort_order' => $item['sort_order'],
-                ]
+                ],
             ]);
         }
 

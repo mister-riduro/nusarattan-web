@@ -36,12 +36,11 @@ class FurnitureSet extends Model
 
     public function getFormattedPriceAttribute(): ?string
     {
-        return $this->price !== null ? '$' . number_format((float) $this->price, 0) : null;
+        return $this->price !== null ? '$'.number_format((float) $this->price, 0) : null;
     }
 
     public function getFormattedSalePriceAttribute(): ?string
     {
-        return $this->sale_price !== null ? '$' . number_format((float) $this->sale_price, 0) : null;
+        return $this->sale_price !== null ? '$'.number_format((float) $this->sale_price, 0) : null;
     }
 }
-

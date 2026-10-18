@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Setting;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -26,4 +25,3 @@ class CategoryController extends Controller
         return view('pages.category', compact('category', 'categories', 'settings'));
     }
 }
-
